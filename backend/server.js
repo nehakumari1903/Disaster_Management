@@ -115,13 +115,18 @@ app.get('/reports', async (req, res) => {
 app.post('/report', async (req, res) => {
   try {
     console.log('Received report:', req.body);
-    
+
+    const { lat, lng, ...rest } = req.body;
+
     const reportData = {
-      ...req.body,
-      coordinates: req.body.coordinates || { lat: 0, lng: 0 },
-      urgency: req.body.urgency || 1,
-      severity: req.body.severity || 5,
-      peopleAffected: req.body.peopleAffected || 1,
+      ...rest,
+      coordinates: {
+        lat: lat || 28.5,
+        lng: lng || 77.0,
+      },
+      urgency: Number(req.body.urgency) || 1,
+      severity: Number(req.body.severity) || 5,
+      peopleAffected: Number(req.body.peopleAffected) || 1,
     };
 
     const incident = await Incident.create(reportData);
