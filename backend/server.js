@@ -12,6 +12,7 @@ const ngoRoutes       = require('./routes/ngos');
 const incidentRoutes  = require('./routes/incidents');
 const dashboardIncidentRoutes = require('./routes/dashboardIncidents');
 const adminRoutes     = require('./routes/admin');
+const Incident = require('./models/Incident');
 
 // ── App Setup ───────────────────────────────────────────────────
 const app    = express();
@@ -101,6 +102,23 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log(`🔌 Client disconnected: ${socket.id}`);
   });
+});
+app.get('/reports', async (req, res) => {
+  try {
+    const incidents = await Incident.find({ status: 'active' }).sort({ score: -1 });
+    res.json(incidents);
+  } catch (err) {
+    res.json([]);
+  }
+});
+
+app.post('/report', async (req, res) => {
+  try {
+    const incident = await Incident.create(req.body);
+    res.json({ success: true, priorityScore: incident.score || 0, incident });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── Start Server ─────────────────────────────────────────────────
