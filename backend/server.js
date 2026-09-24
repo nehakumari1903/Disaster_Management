@@ -105,7 +105,7 @@ io.on('connection', (socket) => {
 });
 app.get('/reports', async (req, res) => {
   try {
-    const incidents = await Incident.find({ status: 'active' }).sort({ score: -1 });
+    const incidents = await Incident.find({ isResolved: false }).sort({ priorityScore: -1 });
     res.json(incidents);
   } catch (err) {
     res.json([]);
@@ -114,9 +114,21 @@ app.get('/reports', async (req, res) => {
 
 app.post('/report', async (req, res) => {
   try {
-    const incident = await Incident.create(req.body);
-    res.json({ success: true, priorityScore: incident.score || 0, incident });
+    console.log('Received report:', req.body);
+    
+    const reportData = {
+      ...req.body,
+      coordinates: req.body.coordinates || { lat: 0, lng: 0 },
+      urgency: req.body.urgency || 1,
+      severity: req.body.severity || 5,
+      peopleAffected: req.body.peopleAffected || 1,
+    };
+
+    const incident = await Incident.create(reportData);
+    req.io.emit('new-report', incident);
+    res.json({ success: true, priorityScore: incident.priorityScore || 0, incident });
   } catch (err) {
+    console.log('Error saving:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
