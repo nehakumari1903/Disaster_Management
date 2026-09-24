@@ -199,11 +199,10 @@ resqnet.html (Landing Page)
 
 ## 👩‍💻 My Contribution
 
-- Built the React.js frontend
-- Connected frontend to backend REST APIs and Socket.io for real-time incident updates
-- Configured CORS and resolved cross-origin issues between Vercel and Render
-- Integrated frontend with backend APIs
-
+- Set up Node.js + Express server with MongoDB Atlas using Mongoose
+- Built API routes for victims, volunteers, NGOs and incidents
+- Implemented JWT authentication and bcrypt password hashing
+- Deployed backend on Render with environment-based configuration
 ## 🔒 Security
 
 - Passwords are hashed using **bcryptjs** before storing in MongoDB
